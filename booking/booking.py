@@ -2,15 +2,62 @@ import grpc
 from concurrent import futures
 import showtime_pb2
 import showtime_pb2_grpc
+import booking_pb2
+import booking_pb2_grpc
 import json
 
-""""
+
 class BookingServicer(booking_pb2_grpc.BookingServicer):
 
     def __init__(self):
         with open('{}/data/bookings.json'.format("."), "r") as jsf:
             self.db = json.load(jsf)["schedule"]
-"""
+
+    def GetAllBookings(self, request, context):
+        all =[]
+        for user in self.db:
+            user_id = user['userid']
+            for d in user.dates:
+                all.append(booking_pb2.BookingItem(
+                    user=user_id, date=d['date'], movie=d['movies'][0] 
+                    )
+                )
+        return showtime_pb2.Bookings(bookings=all)
+    
+    def GetUserBookings(self, request, context):
+        for user in self.db:
+            if user['userid'] == request.id :
+                user_booking = []
+                for d in user.dates:
+                    user_booking.append(showtime_pb2(
+                        user=request.id, date=d['date'], movie=d['movie'][0]
+                        )
+                    )
+        return showtime_pb2.Bookings(bookings=user_booking)
+    
+    def AddBookingOfUser(self, request, context):
+        #Verify booking exist
+        with grpc.insecure_channel('localhost:3002') as channel:
+            stub = showtime_pb2_grpc.ShowtimeStub(channel)
+            movieSchedule = getMovieSchedule(stub, request.movie)
+            for date in movieSchedule.dates:
+                if date.date == request.date :
+                    #addBooking
+                    for booking in self.db:
+                        if booking['userid'] == request.user:
+                            booking['dates'].append({
+                                "date": request.date,
+                                "movies": [request.movie]
+                            })
+                    write(self.db)
+                    return booking_pb2.Message(body='Booking added')
+            return booking_pb2.Message(body='Booking not added')
+
+
+
+def write(something):
+    with open('{}/databases/bookings.json'.format("."), 'w') as f:
+        json.dump(something, f, indent=4)
 
 def getSchedule(stub):
     response = stub.GetSchedule(showtime_pb2.Empty())
