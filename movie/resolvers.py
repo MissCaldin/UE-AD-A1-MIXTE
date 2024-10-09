@@ -39,7 +39,7 @@ def add_movie(_, info, _id, _title, _director, _rating):
 
     movies['movies'].append(new_movie)
 
-    with open('./data/movies.json'.format("."), "w") as wfile:
+    with open('{}/data/movies.json'.format("."), "w") as wfile:
         json.dump(movies, wfile)
     return new_movie
 
@@ -61,7 +61,7 @@ def delete_movie(_, info, _id):
     
     movies['movies'] = updated_movies
     
-    with open('./data/movies.json', "w") as wfile:
+    with open('{}/data/movies.json'.format("."), "w") as wfile:
         json.dump(movies, wfile)
     
     return movie_to_delete
