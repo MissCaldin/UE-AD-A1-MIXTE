@@ -12,6 +12,7 @@ type_defs = load_schema_from_path('movie.graphql')
 query = QueryType()
 movie = ObjectType('Movie')
 query.set_field('movie_with_id', r.movie_with_id)
+query.set_field('movie_by_title', r.movie_by_title)
 schema = make_executable_schema(type_defs, movie, query)
 query.set_field('movies', r.all_movies)
 schema = make_executable_schema(type_defs, query)
@@ -25,7 +26,7 @@ schema = make_executable_schema(type_defs, query, mutation)
 # root message
 @app.route("/", methods=['GET'])
 def home():
-    return make_response("<h1 style='color:blue'>Welcome to the Movie service!</h1>",200)
+    return "<h1 style='color:blue'>Welcome to the Movie service!</h1>"
 
 # graphql entry points
 @app.route('/graphql', methods=['POST'])
