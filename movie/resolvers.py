@@ -12,6 +12,13 @@ def movie_with_id(_,info,_id):
             if movie['id'] == _id:
                 return movie
 
+def movie_by_title(_,info,_title):
+    with open('{}/data/movies.json'.format("."), "r") as file:
+        movies = json.load(file)
+        for movie in movies['movies']:
+            if movie['title'] == _title:
+                return movie
+
 def update_movie_rate(_,info,_id,_rate):
     newmovies = {}
     newmovie = {}
@@ -39,7 +46,7 @@ def add_movie(_, info, _id, _title, _director, _rating):
 
     movies['movies'].append(new_movie)
 
-    with open('./data/movies.json'.format("."), "w") as wfile:
+    with open('{}/data/movies.json'.format("."), "w") as wfile:
         json.dump(movies, wfile)
     return new_movie
 
@@ -61,7 +68,7 @@ def delete_movie(_, info, _id):
     
     movies['movies'] = updated_movies
     
-    with open('./data/movies.json', "w") as wfile:
+    with open('{}/data/movies.json'.format("."), "w") as wfile:
         json.dump(movies, wfile)
     
     return movie_to_delete
