@@ -23,10 +23,12 @@ HOST = '0.0.0.0'
 with open('{}/data/users.json'.format("."), "r") as jsf:
    users = json.load(jsf)["users"]
 
+#Home page of the service
 @app.route("/", methods=['GET'])
 def home():
    return "<h1 style='color:blue'>Welcome to the User service!</h1>"
 
+#Display all the movies and their data
 @app.route("/movies", methods=['GET'])
 def movies():
    url="http://127.0.0.1:3001/graphql"
@@ -40,6 +42,7 @@ def movies():
    response = requests.post(url=url, json={"query":body})
    return make_response(jsonify(response.json()["data"]), 200)
 
+#Display data about movie
 @app.route("/movies/<movieid>", methods=['GET'])
 def movie_by_id(movieid):
    url=f"http://127.0.0.1:3001/graphql"
@@ -55,7 +58,8 @@ def movie_by_id(movieid):
    """ % movieid
    response1=requests.post(url, json={"query":body})
    return make_response(jsonify(response1.json()["data"]), 200)
-   
+
+  #Home page of the user 
 @app.route("/<string:id>", methods=["GET"])
 def home_user(id):
    user = next((user for user in users if user['id'] == id), None)
@@ -73,6 +77,7 @@ def test2():
       print(response)
    return make_response(jsonify(response))"""
 
+#Display the bookings of the user
 @app.route("/<userid>/bookings", methods=['GET'])
 def userBookings(userid):
    with grpc.insecure_channel('localhost:3003') as channel:
@@ -80,6 +85,7 @@ def userBookings(userid):
       response = json.loads(MessageToJson(getUserBooking(stub, userid)))
    return make_response(jsonify(response))
 
+#Add a booking for the user
 @app.route("/<userid>/addBooking", methods=['GET'])
 def addBooking(stub, user_id, date, movie_id):
    with grpc.insecure_channel('localhost:3003') as channel:
@@ -88,7 +94,7 @@ def addBooking(stub, user_id, date, movie_id):
    return make_response(jsonify(response))
 
 
-# TEST DU SERVICE BOOKINGS
+# FUNCTIONS TO TEST THE SERVICE BOOKINGS
 
 def getAllBookings(stub):
    response = stub.GetAllBookings(booking_pb2.BookingEmpty())
@@ -139,12 +145,14 @@ def test():
       getMovieSchedule(stub, "96798c08-d19b-4986-a05d-7da856efb697")
       print("-------------- GetScheduleByDate --------------")
       getScheduleByDate(stub, "20151203")
-
-
-      
+  
    channel.close()
 
+#END OF TEST FUNCTIONS
+
 if __name__ == "__main__":
+   #Decomment line 156 to test the service booking
+   #Warning: booking and user have to be running
    #test()
    print("Server running in port %s"%(PORT))
    app.run(host=HOST, port=PORT)
