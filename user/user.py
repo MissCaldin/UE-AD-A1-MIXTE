@@ -10,6 +10,8 @@ from concurrent import futures
 import booking_pb2
 import booking_pb2_grpc
 
+from google.protobuf.json_format import MessageToJson
+
 # CALLING GraphQL requests
 # todo to complete
 
@@ -58,7 +60,34 @@ def movie_by_id(movieid):
 @app.route("/<string:id>", methods=["GET"])
 def home_user(id):
    user = next((user for user in users if user['id'] == id), None)
+   if user==None:
+      return jsonify({"error": "User not found"}), 404
    return make_response(jsonify(user['name']))
+
+"""@app.route("/test", methods=["GET"])
+def test2():
+   with grpc.insecure_channel('localhost:3003') as channel:
+      stub = booking_pb2_grpc.BookingStub(channel)
+
+      print("-------------- GetAllBookings --------------")
+      response = json.loads(MessageToJson(getAllBookings(stub)))
+      print(response)
+   return make_response(jsonify(response))"""
+
+@app.route("/<userid>/bookings", methods=['GET'])
+def userBookings(userid):
+   with grpc.insecure_channel('localhost:3003') as channel:
+      stub = booking_pb2_grpc.BookingStub(channel)
+      response = json.loads(MessageToJson(getUserBooking(stub, userid)))
+   return make_response(jsonify(response))
+
+@app.route("/<userid>/addBooking", methods=['GET'])
+def addBooking(stub, user_id, date, movie_id):
+   with grpc.insecure_channel('localhost:3003') as channel:
+      stub = booking_pb2_grpc.BookingStub(channel)
+      response = json.loads(MessageToJson(addBookingOfUser(stub, userid)))
+   return make_response(jsonify(response))
+
 
 # TEST DU SERVICE BOOKINGS
 
@@ -67,6 +96,7 @@ def getAllBookings(stub):
    print('Printing all the bookings')
    for b in response.bookings:
       print(f"user: {b.user} ; date: {b.date} ; movie: {b.movie}")
+   return response
 
 def getUserBooking(stub, id):
    response = stub.GetUserBookings(booking_pb2.UserId(id=id))
@@ -74,16 +104,18 @@ def getUserBooking(stub, id):
    print(len(response.bookings))
    for b in response.bookings:
       print(f"user: {b.user} ; date: {b.date} ; movie: {b.movie}")
+   return response
 
 def addBookingOfUser(stub, user_id, date, movie_id):
    response =  stub.AddBookingOfUser(booking_pb2.BookingItem(
       user = user_id, date=date, movie = movie_id
    ))
    print(response.body)
+   return response
 
 
 def test():
-   with grpc.insecure_channel('localhost:3001') as channel:
+   with grpc.insecure_channel('localhost:3003') as channel:
       stub = booking_pb2_grpc.BookingStub(channel)
 
       print("-------------- GetAllBookings --------------")
@@ -98,6 +130,6 @@ def test():
    channel.close()
 
 if __name__ == "__main__":
-   test()
+   #test()
    print("Server running in port %s"%(PORT))
    app.run(host=HOST, port=PORT)
