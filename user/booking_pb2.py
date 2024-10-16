@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbooking.proto\"\x0e\n\x0c\x42ookingEmpty\"*\n\x08\x42ookings\x12\x1e\n\x08\x62ookings\x18\x01 \x03(\x0b\x32\x0c.BookingItem\"\x14\n\x06UserId\x12\n\n\x02id\x18\x01 \x01(\t\"8\n\x0b\x42ookingItem\x12\x0c\n\x04user\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61te\x18\x02 \x01(\t\x12\r\n\x05movie\x18\x03 \x01(\t\"\x17\n\x07Message\x12\x0c\n\x04\x62ody\x18\x01 \x01(\t2\x8e\x01\n\x07\x42ooking\x12,\n\x0eGetAllBookings\x12\r.BookingEmpty\x1a\t.Bookings\"\x00\x12\'\n\x0fGetUserBookings\x12\x07.UserId\x1a\t.Bookings\"\x00\x12,\n\x10\x41\x64\x64\x42ookingOfUser\x12\x0c.BookingItem\x1a\x08.Message\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbooking.proto\"\x0e\n\x0c\x42ookingEmpty\"*\n\x08\x42ookings\x12\x1e\n\x08\x62ookings\x18\x01 \x03(\x0b\x32\x0c.BookingItem\"\x14\n\x06UserId\x12\n\n\x02id\x18\x01 \x01(\t\"8\n\x0b\x42ookingItem\x12\x0c\n\x04user\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61te\x18\x02 \x01(\t\x12\r\n\x05movie\x18\x03 \x01(\t\"\x17\n\x07Message\x12\x0c\n\x04\x62ody\x18\x01 \x01(\t\"\x15\n\x05\x42\x44\x61te\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\")\n\tBSchedule\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0e\n\x06movies\x18\x02 \x03(\t\"\x16\n\x08\x42MovieID\x12\n\n\x02id\x18\x01 \x01(\t\".\n\x0e\x42MovieSchedule\x12\r\n\x05movie\x18\x01 \x01(\t\x12\r\n\x05\x64\x61tes\x18\x02 \x03(\t2\xed\x01\n\x07\x42ooking\x12,\n\x0eGetAllBookings\x12\r.BookingEmpty\x1a\t.Bookings\"\x00\x12\'\n\x0fGetUserBookings\x12\x07.UserId\x1a\t.Bookings\"\x00\x12,\n\x10\x41\x64\x64\x42ookingOfUser\x12\x0c.BookingItem\x1a\x08.Message\"\x00\x12*\n\x12GetScheduleByDateB\x12\x06.BDate\x1a\n.BSchedule\"\x00\x12\x31\n\x11GetMovieScheduleB\x12\t.BMovieID\x1a\x0f.BMovieSchedule\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -41,6 +41,14 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_BOOKINGITEM']._serialized_end=155
   _globals['_MESSAGE']._serialized_start=157
   _globals['_MESSAGE']._serialized_end=180
-  _globals['_BOOKING']._serialized_start=183
-  _globals['_BOOKING']._serialized_end=325
+  _globals['_BDATE']._serialized_start=182
+  _globals['_BDATE']._serialized_end=203
+  _globals['_BSCHEDULE']._serialized_start=205
+  _globals['_BSCHEDULE']._serialized_end=246
+  _globals['_BMOVIEID']._serialized_start=248
+  _globals['_BMOVIEID']._serialized_end=270
+  _globals['_BMOVIESCHEDULE']._serialized_start=272
+  _globals['_BMOVIESCHEDULE']._serialized_end=318
+  _globals['_BOOKING']._serialized_start=321
+  _globals['_BOOKING']._serialized_end=558
 # @@protoc_insertion_point(module_scope)

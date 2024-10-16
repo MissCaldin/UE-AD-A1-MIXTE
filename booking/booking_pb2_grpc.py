@@ -49,6 +49,16 @@ class BookingStub(object):
                 request_serializer=booking__pb2.BookingItem.SerializeToString,
                 response_deserializer=booking__pb2.Message.FromString,
                 _registered_method=True)
+        self.GetScheduleByDateB = channel.unary_unary(
+                '/Booking/GetScheduleByDateB',
+                request_serializer=booking__pb2.BDate.SerializeToString,
+                response_deserializer=booking__pb2.BSchedule.FromString,
+                _registered_method=True)
+        self.GetMovieScheduleB = channel.unary_unary(
+                '/Booking/GetMovieScheduleB',
+                request_serializer=booking__pb2.BMovieID.SerializeToString,
+                response_deserializer=booking__pb2.BMovieSchedule.FromString,
+                _registered_method=True)
 
 
 class BookingServicer(object):
@@ -72,6 +82,18 @@ class BookingServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetScheduleByDateB(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetMovieScheduleB(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_BookingServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -89,6 +111,16 @@ def add_BookingServicer_to_server(servicer, server):
                     servicer.AddBookingOfUser,
                     request_deserializer=booking__pb2.BookingItem.FromString,
                     response_serializer=booking__pb2.Message.SerializeToString,
+            ),
+            'GetScheduleByDateB': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetScheduleByDateB,
+                    request_deserializer=booking__pb2.BDate.FromString,
+                    response_serializer=booking__pb2.BSchedule.SerializeToString,
+            ),
+            'GetMovieScheduleB': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetMovieScheduleB,
+                    request_deserializer=booking__pb2.BMovieID.FromString,
+                    response_serializer=booking__pb2.BMovieSchedule.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -172,6 +204,60 @@ class Booking(object):
             '/Booking/AddBookingOfUser',
             booking__pb2.BookingItem.SerializeToString,
             booking__pb2.Message.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetScheduleByDateB(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/Booking/GetScheduleByDateB',
+            booking__pb2.BDate.SerializeToString,
+            booking__pb2.BSchedule.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetMovieScheduleB(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/Booking/GetMovieScheduleB',
+            booking__pb2.BMovieID.SerializeToString,
+            booking__pb2.BMovieSchedule.FromString,
             options,
             channel_credentials,
             insecure,

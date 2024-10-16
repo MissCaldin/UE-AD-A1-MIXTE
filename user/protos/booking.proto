@@ -4,6 +4,8 @@ service Booking {
     rpc GetAllBookings(BookingEmpty) returns (Bookings) {}
     rpc GetUserBookings(UserId) returns (Bookings) {}
     rpc AddBookingOfUser(BookingItem) returns (Message) {}
+    rpc GetScheduleByDateB(BDate) returns (BSchedule) {}
+    rpc GetMovieScheduleB(BMovieID) returns (BMovieSchedule) {}
 }
 
 message BookingEmpty {
@@ -25,4 +27,22 @@ message BookingItem {
 
 message Message {
     string body = 1;
+}
+
+message BDate {
+    string date = 1;
+}
+
+message BSchedule {
+    string date = 1;
+    repeated string movies = 2;
+}
+
+message BMovieID {
+    string id = 1;
+}
+
+message BMovieSchedule {
+    string movie = 1;
+    repeated string dates =2;
 }

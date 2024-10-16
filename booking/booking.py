@@ -52,6 +52,18 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
                     write({"bookings":self.db})
                     return booking_pb2.Message(body='Booking added')
             return booking_pb2.Message(body='Booking not added')
+        
+    def GetScheduleByDateB(self, request, context):
+        with grpc.insecure_channel('localhost:3002') as channel:
+            stub = showtime_pb2_grpc.ShowtimeStub(channel)
+            schedule = stub.GetScheduleByDate(showtime_pb2.Date(date=request.date))
+            return booking_pb2.BSchedule(date=schedule.date, movies=schedule.movies)
+        
+    def GetMovieScheduleB(self, request, context):
+        with grpc.insecure_channel('localhost:3002') as channel:
+            stub = showtime_pb2_grpc.ShowtimeStub(channel)
+            schedule = stub.GetMovieSchedule(showtime_pb2.MovieID(id=request.id))
+            return booking_pb2.BMovieSchedule(movie=schedule.movie, dates=schedule.dates) 
 
 
 
@@ -114,7 +126,7 @@ def run():
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     booking_pb2_grpc.add_BookingServicer_to_server(BookingServicer(), server)
-    server.add_insecure_port('[::]:3001')
+    server.add_insecure_port('[::]:3003')
     server.start()
     server.wait_for_termination()
 

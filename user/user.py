@@ -21,7 +21,6 @@ HOST = '0.0.0.0'
 with open('{}/data/users.json'.format("."), "r") as jsf:
    users = json.load(jsf)["users"]
 
-
 @app.route("/", methods=['GET'])
 def home():
    return "<h1 style='color:blue'>Welcome to the User service!</h1>"
@@ -81,9 +80,20 @@ def addBookingOfUser(stub, user_id, date, movie_id):
    ))
    print(response.body)
 
+def getMovieSchedule(stub, movie_id):
+   response = stub.GetMovieScheduleB(booking_pb2.BMovieID(id=movie_id))
+   for d in response.dates:
+      print(d)
+
+def getScheduleByDate(stub, date):
+   response = stub.GetScheduleByDateB(booking_pb2.BDate(date=date))
+   for m in response.movies:
+      print(m)
+
+
 
 def test():
-   with grpc.insecure_channel('localhost:3001') as channel:
+   with grpc.insecure_channel('localhost:3003') as channel:
       stub = booking_pb2_grpc.BookingStub(channel)
 
       print("-------------- GetAllBookings --------------")
@@ -93,6 +103,11 @@ def test():
       print("-------------- AddBookingOfUser --------------")
       addBookingOfUser(stub, "dwight_schrute", "20151203", "720d006c-3a57-4b6a-b18f-9b713b073f3c" )
       addBookingOfUser(stub, "dwight_schrute", "20201203", "720d006c-3a57-4b6a-b18f-9b713b073f3c" )
+      print("-------------- GetMovieSchedule --------------")
+      getMovieSchedule(stub, "96798c08-d19b-4986-a05d-7da856efb697")
+      print("-------------- GetScheduleByDate --------------")
+      getScheduleByDate(stub, "20151203")
+
 
       
    channel.close()
