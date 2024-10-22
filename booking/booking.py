@@ -13,6 +13,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         with open('{}/data/bookings.json'.format("."), "r") as jsf:
             self.db = json.load(jsf)["bookings"]
 
+    #Return all the bookings of the database (see booking.proto)
     def GetAllBookings(self, request, context):
         all =[]
         for user in self.db:
@@ -24,6 +25,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
                 )
         return booking_pb2.Bookings(bookings=all)
     
+    #Return all the bookings of the user of the database (see booking.proto)
     def GetUserBookings(self, request, context):
         user_booking = []
         for user in self.db:
@@ -35,6 +37,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
                     )
         return booking_pb2.Bookings(bookings=user_booking)
     
+    #Add a booking for the user (see booking.proto)
     def AddBookingOfUser(self, request, context):
         #Verify booking exist
         with grpc.insecure_channel('localhost:3002') as channel:
@@ -52,13 +55,15 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
                     write({"bookings":self.db})
                     return booking_pb2.Message(body='Booking added')
             return booking_pb2.Message(body='Booking not added')
-        
+
+    #Return the movies scheduled at this date (see booking.proto)    
     def GetScheduleByDateB(self, request, context):
         with grpc.insecure_channel('localhost:3002') as channel:
             stub = showtime_pb2_grpc.ShowtimeStub(channel)
             schedule = stub.GetScheduleByDate(showtime_pb2.Date(date=request.date))
             return booking_pb2.BSchedule(date=schedule.date, movies=schedule.movies)
-        
+
+    #Return the dates when the movie is scheduled (see booking.proto)    
     def GetMovieScheduleB(self, request, context):
         with grpc.insecure_channel('localhost:3002') as channel:
             stub = showtime_pb2_grpc.ShowtimeStub(channel)
@@ -70,6 +75,9 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
 def write(something):
     with open('{}/data/bookings.json'.format("."), 'w') as f:
         json.dump(something, f, indent=4)
+
+
+#FUNCTIONS TO TEST THE SERVICE SHOWTIMES
 
 def getSchedule(stub):
     response = stub.GetSchedule(showtime_pb2.Empty())
@@ -122,6 +130,7 @@ def run():
 
     channel.close()
 
+#END OF THE TEST FUNCTIONS
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -132,5 +141,7 @@ def serve():
 
 
 if __name__ == '__main__':
+    #Decomment line 146 to test the service user
+    #Warning: user have to be running
     #run()
     serve()
