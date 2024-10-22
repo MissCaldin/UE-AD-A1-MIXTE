@@ -55,23 +55,61 @@ def movie_by_id(movieid):
    """ % movieid
    response1=requests.post(url, json={"query":body})
    return make_response(jsonify(response1.json()["data"]), 200)
+
+@app.route("/showmovies/<date>", methods=['GET'])
+def showmovies(date):
+   #Récupérer auprès de showtimes les films à cette date
+   with grpc.insecure_channel('localhost:3003') as channel:
+      stub = booking_pb2_grpc.BookingStub(channel)
+      response = json.loads(MessageToJson(getScheduleByDate(stub, date)))
+   response["date"]=pretty_date(response["date"])
+   #Récupérer auprès de movies les titres des films pour remplacer les ids
+   url=f"http://127.0.0.1:3001/graphql"
+   for ii in range(len(response["movies"])):
+      id_movie=response["movies"][ii]
+      body="""
+      {
+         movie_with_id(_id: "%s") {
+            id
+            title
+         } 
+      }
+      """ % id_movie
+      title=requests.post(url, json={"query":body}).json()["movie_with_id"]["title"]
+      response["movies"][ii]=title
+   return make_response(response, 200)
    
+@app.route("/movieschedule/<movieid>", methods=['GET'])
+def movieschedule(movieid):
+   with grpc.insecure_channel('localhost:3003') as channel:
+      stub = booking_pb2_grpc.BookingStub(channel)
+      response = json.loads(MessageToJson(getMovieSchedule(stub, date)))
+   response["date"]=pretty_date(response["date"])
+   url=f"http://127.0.0.1:3200/movies/{movieid}"
+   response1=requests.get(url)
+   if response1.status_code == 400:
+      return response1
+   title=response1.json()["title"]
+
+   url=f"http://127.0.0.1:3201/movieschedule/{movieid}"
+   response2 = requests.get(url)
+   if response2.status_code == 400:
+      return response2
+   
+   response=[]
+   rep_json = response2.json()
+
+   for date in rep_json[movieid]:
+      response.append(pretty_date(date))
+   
+   return make_response(jsonify({title: response}), 200)
+
 @app.route("/<string:id>", methods=["GET"])
 def home_user(id):
    user = next((user for user in users if user['id'] == id), None)
    if user==None:
       return jsonify({"error": "User not found"}), 404
    return make_response(jsonify(user['name']))
-
-"""@app.route("/test", methods=["GET"])
-def test2():
-   with grpc.insecure_channel('localhost:3003') as channel:
-      stub = booking_pb2_grpc.BookingStub(channel)
-
-      print("-------------- GetAllBookings --------------")
-      response = json.loads(MessageToJson(getAllBookings(stub)))
-      print(response)
-   return make_response(jsonify(response))"""
 
 @app.route("/<userid>/bookings", methods=['GET'])
 def userBookings(userid):
@@ -116,12 +154,13 @@ def getMovieSchedule(stub, movie_id):
    response = stub.GetMovieScheduleB(booking_pb2.BMovieID(id=movie_id))
    for d in response.dates:
       print(d)
+   return response
 
 def getScheduleByDate(stub, date):
    response = stub.GetScheduleByDateB(booking_pb2.BDate(date=date))
    for m in response.movies:
       print(m)
-
+   return response
 
 
 def test():
@@ -144,7 +183,10 @@ def test():
       
    channel.close()
 
+def pretty_date(date):
+   return date[6:]+'/'+date[4:6]+'/'+date[:4]
+
 if __name__ == "__main__":
-   #test()
+   test()
    print("Server running in port %s"%(PORT))
    app.run(host=HOST, port=PORT)
