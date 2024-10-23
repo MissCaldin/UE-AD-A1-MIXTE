@@ -125,11 +125,11 @@ def userBookings(userid):
    return make_response(jsonify(response))
 
 #Add a booking for the user
-@app.route("/<userid>/addBooking", methods=['GET'])
-def addBooking(stub, user_id, date, movie_id):
+@app.route("/<user_id>/addBooking/<date>/<movie_id>", methods=['GET'])
+def addBooking(user_id, date, movie_id):
    with grpc.insecure_channel('localhost:3003') as channel:
       stub = booking_pb2_grpc.BookingStub(channel)
-      response = json.loads(MessageToJson(addBookingOfUser(stub, userid)))
+      response = json.loads(MessageToJson(addBookingOfUser(stub, user_id, date, movie_id)))
    return make_response(jsonify(response))
 
 
